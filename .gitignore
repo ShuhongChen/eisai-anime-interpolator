@@ -1,5 +1,21 @@
 
 
 temp/
+_help/
+_help
+_notes.txt
+_notebooks/
+tmp/
+var_tmp/
 
-
+*.sublime-workspace
+**/___*
+**/__pycache__
+**/.ipynb_checkpoints
+**/.directory
+**/.Trash*
+**/.empty
+**/slurm-*
+**/runs
+**/lightning_logs
+**/slurm
