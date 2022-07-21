@@ -35,15 +35,8 @@ class RAFT(nn.Module):
         return out[0].flip(dims=(1,)), (locals() if return_more else None)
 
 # wrapper
-def interpolate(raft, ssl, dtm, img0, img1, t=0.5, return_more=False):
+def interpolate(ssl, dtm, x, t=0.5, return_more=False):
     with torch.no_grad():
-        img0,img1 = img0.t()[None,:3].to(device), img1.t()[None,:3].to(device)
-        flow0,_ = raft(img0, img1)
-        flow1,_ = raft(img1, img0)
-        x = {
-            'images': torch.stack([img0,img1], dim=1),
-            'flows': torch.stack([flow0,flow1], dim=1),
-        }
         out_ssl,_ = ssl(x, t=t, return_more=True)
         out_dtm,_ = dtm(x, out_ssl, _, return_more=return_more)
         ans = I(out_dtm[0,:3])
@@ -81,8 +74,16 @@ if __name__=='__main__':
     uutil.mkdir(args.out)
     img0.resize(original_size).save(f'{args.out}/{n-1:02d}_{0:02d}.png')
     img1.resize(original_size).save(f'{args.out}/{n-1:02d}_{n-1:02d}.png')
+    with torch.no_grad():
+        img0,img1 = img0.t()[None,:3].to(device), img1.t()[None,:3].to(device)
+        flow0,_ = raft(img0, img1)
+        flow1,_ = raft(img1, img0)
+        x = {
+            'images': torch.stack([img0,img1], dim=1),
+            'flows': torch.stack([flow0,flow1], dim=1),
+        }
     for i,t in enumerate(ts):
-        ans,_ = interpolate(raft, ssl, dtm, img0, img1, t=t)
+        ans,_ = interpolate(ssl, dtm, x, t=t)
         ans.resize(original_size).save(f'{args.out}/{n-1:02d}_{i+1:02d}.png')
 
 
