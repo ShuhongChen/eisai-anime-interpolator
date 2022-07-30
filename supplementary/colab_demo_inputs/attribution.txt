@@ -1,0 +1,3 @@
+from AnimeInterp ATD12k dataset
+https://github.com/lisiyao21/AnimeInterp#data
+Japan_v2_2_013471_s3
